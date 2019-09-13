@@ -142,7 +142,7 @@ std::string join(std::string sep, std::vector<std::string> strs) {
 }
 
 
-/* struct to hold details of financial instruments (stocks, bonds, ETFs, ADRs, etc.) */
+/* Struct to hold details of financial instruments (stocks, bonds, ETFs, ADRs, etc.) */
 struct stock_data {
     int time_id;
     int price;
@@ -155,28 +155,28 @@ int main(int argc, char *argv[])
     Configuration config(test_mode);
     Connection conn(config);
     
-    /* communication to market */
+    /* Communication to market */
     std::vector<std::string> data;
     data.push_back(std::string("HELLO"));
     data.push_back(config.team_name);
 
-    /* strings to hold information from market */
+    /* Strings to hold information from market */
     std::string send;
     std::string price;
     std::string quantity;
     
     conn.send_to_exchange(join(" ", data));
     
-    /* check communication status to market */
+    /* Initial check for communication status to market */
     //conn.send_to_exchange(std::string("HELLO STOCKOVERFLOW\n"));
     
-    /* see information presented by market */
+    /* See information presented by market */
     /*for (int i = 0; i < 200; i++){
         std::cout << "number" << i << ":";
         std::cout << conn.read_from_exchange() << std::endl;
     }*/
     
-    /* check communication to server */
+    /* Check communication to server */
     //conn.send_to_exchange(std::string("HELLO STOCKOVERFLOW\n"));
     //std::cout << conn.read_from_exchange() << std::endl;
 
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
     stock_data WFC_struct;
     stock_data XLF_struct;
     
-    int temp_time = 0; // temporary time variable used to calculate elapsed time
+    int temp_time = 0; // Temporary time variable used to calculate elapsed time
     
     auto start = std::chrono::steady_clock::now(); // Save starting time
     
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 MS_struct.volume += std::stoi(volume);
                 MS_struct.price = std::stoi(price);
                 
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 BOND_struct.volume += std::stoi(volume);
                 BOND_struct.price = std::stoi(price);
                 
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 VALBZ_struct.volume += std::stoi(volume);
                 VALBZ_struct.price = std::stoi(price);
                 
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 VALE_struct.volume += std::stoi(volume);
                 VALE_struct.price = std::stoi(price);
                 
@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 GS_struct.volume += std::stoi(volume);
                 GS_struct.price = std::stoi(price);
                 
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 WFC_struct.volume += std::stoi(volume);
                 WFC_struct.price = std::stoi(price);
                 
@@ -280,19 +280,19 @@ int main(int argc, char *argv[])
                 lineStream >> price;
                 lineStream >> volume;
                 
-                /* save exchange information into struct for specific item */
+                /* Save exchange information into struct for specific item */
                 XLF_struct.volume += std::stoi(volume);
                 XLF_struct.price = std::stoi(price);
                 
             }
         }
         
-        /* check for elapsed time from start */
+        /* Check for elapsed time from start */
         auto end = std::chrono::steady_clock::now();
         int time = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
         
         if (time != temp_time) {
-            /* send time to output */
+            /* Send time to output */
             std::cout << time << std::endl;
             
             /* Store struct data read from exchange into vector for respective item */
@@ -333,9 +333,7 @@ int main(int argc, char *argv[])
             XLF_struct.volume = 0;
             
             
-            /* General strategy was to sell at prices higher than market value, and buy at prices lower than market value,
-             for different fincancial items, there were different limits for this pricing, with the same general strategy applied
-             to each item. */
+            /* General economic strategy for buying and selling market items */
             
             if (VALE_struct.price > VALBZ_struct.price + 10) {
                 conn.send_to_exchange("ADD " + std::to_string(j) + " VALE SELL " + std::to_string(VALE_struct.price) + " 2\n");
@@ -350,14 +348,14 @@ int main(int argc, char *argv[])
             if ((10 * XLF_struct.price) > (3 * BOND_struct.price) + (3 * MS_struct.price) + (2 * GS_struct.price) + (2 * WFC_struct.price) + 100) {
                 conn.send_to_exchange("ADD " + std::to_string(j) + " XLF SELL " + std::to_string(XLF_struct.price) + " 2\n");
                 
-                /* decided to focus on just the XLF items at a point in competition, so the below was commented */
+                /* Decided to focus on just the XLF items at a point in competition, so the below was commented */
                 //conn.send_to_exchange("ADD " + std::to_string(j + 1) + " BOND BUY " + std::to_string(VALBZ_struct.price) + " 1\n");
             }
             
             else if ((10 * XLF_struct.price) + 100 < (3 * BOND_struct.price) + (3 * MS_struct.price) + (2 * GS_struct.price) + (2 * WFC_struct.price)) {
                 conn.send_to_exchange("ADD " + std::to_string(j) + " XLF BUY " + std::to_string(XLF_struct.price) + " 2\n");
                 
-                /* decided to focus on just the XLF items at a point in competition, so the below was commented */
+                /* Decided to focus on just the XLF items at a point in competition, so the below was commented */
                 //conn.send_to_exchange("ADD " + std::to_string(j + 1) + " VALBZ BUY " + std::to_string(VALBZ_struct.price) + " 1\n");
             }
             
@@ -368,7 +366,7 @@ int main(int argc, char *argv[])
         j+=2; // increment through vector
     }
     
-    /* output market information for further analysis in a .csv file */
+    /* Output market information for further analysis in a .csv file */
     std::ofstream myfile;
     myfile.open ("stocks.csv");
     myfile << "\n\nMS\ntime,price,volume\n";
