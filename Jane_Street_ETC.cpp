@@ -1,5 +1,10 @@
 /* Base code for getting messages from the market exchange provided by Jane Street */
-/* Samuel Weninger */
+/* 
+ * Author:    Samuel Weninger
+ * Created:   June 8th, 2019
+ * Modified:  September 12th, 2019   (minor commenting)
+ *
+**/
 
 /* C includes for networking things */
 #include <stdlib.h>
